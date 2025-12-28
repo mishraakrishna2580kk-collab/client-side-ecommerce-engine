@@ -1,3 +1,6 @@
+document.addEventListener("DOMContentLoaded", function () {
+
+
 //Product data (later this will come from database)
 const products=[
   {id: 1, name: "Patanjali Honey", price: 150 },
@@ -40,4 +43,4 @@ function renderCart() {
   });
 }
 
-
+});
