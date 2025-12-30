@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  alert("JS LOADED");
 
   const products = [
     { id: 1, name: "Patanjali Honey", price: 150 },
