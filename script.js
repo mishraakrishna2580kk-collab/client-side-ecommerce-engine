@@ -11,6 +11,7 @@ const products=[
 
 const productList=document.getElementById("productList");
 const cartList=document.getElementById("cart");
+const totalEl= document.getElementById("total");
 
 let cart=[];
 
@@ -26,21 +27,32 @@ products.forEach(product => {
   productList.appendChild(div);
 });
 
-//Add product to cart
-function addToCart(productId) {
-  const product=products.find(p => p.id === productId);
-  cart.push(product);
-  renderCart();
-}
+//New Cart logic with quantity
+window.addToCart= function (productId) {
+  const product = product.find(p => p.id === productid);
+  const cartItem = cart.find(item => item.id === productId);
 
-//show cart items
-function renderCart() {
-  cartList.innerHTML="";
+  if (cartItem) {
+    cartItem.quantity += 1;
+  } else {
+    cart.push({ ...product, quantity: 1 });
+  }
+
+  renderCart();
+};
+
+function renderCart(){
+  cartList.i="";
+  let total = 0;
+
   cart.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent=`${item.name} - ₹${item.price} `;
+    const li= document.createElement("li");
+    li.textContent=`${item.name} × ${item.quantity} = ₹${item.price * item.quantity}`;
     cartList.appendChild(li);
+    total += item.price * item.quantity;
   });
+
+  totalEl.textContent = total;
 }
 
 });
