@@ -2,9 +2,28 @@ document.addEventListener("DOMContentLoaded", function () {
   alert("JS LOADED");
 
   const products = [
-    { id: 1, name: "Patanjali Honey", price: 150 },
-    { id: 2, name: "Patanjali Dant Kanti", price: 60 },
-    { id: 3, name: "Patanjali Aloe Vera Gel", price: 120 }
+    { 
+      id: 1,
+      name: "Patanjali Honey", 
+      price: 150,
+      image:"images/honey.jpg",
+      category: "grocery"
+
+    },
+    { 
+      id: 2, 
+      name: "Patanjali Dant Kanti", 
+      price: 60,
+      image:"images/dantkanti.jpg",
+      category: "personal"
+    },
+    { 
+      id: 3, 
+      name: "Patanjali Aloe Vera Gel", 
+      price: 120 ,
+      image:"images/alovera.jpg",
+      category: "cosmetic"
+    },
   ];
 
   const productList = document.getElementById("productList");
@@ -17,11 +36,13 @@ document.addEventListener("DOMContentLoaded", function () {
   products.forEach(product => {
     const div = document.createElement("div");
     div.className = "product";
-    div.innerHTML = `
-      <h4>${product.name}</h4>
-      <p>₹${product.price}</p>
-      <button>Add to Cart</button>
-    `;
+  div.innerHTML = `
+  <img src="${product.image}" alt="${product.name}" />
+  <h4>${product.name}</h4>
+  <p>₹${product.price}</p>
+  <button onclick="addToCart(${product.id})">Add to Cart</button>
+  `;
+
     div.querySelector("button").addEventListener("click", () => {
       addToCart(product.id);
     });
@@ -65,22 +86,21 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  let message = `🛒 *New Order*\n\n`;
-  message += `👤 Name: ${name}\n`;
-  message += `📞 Phone: ${phone}\n`;
-  message += `🏠 Address: ${address}\n\n`;
-  message += `📦 Items:\n`;
+  let message = ` *New Order*\n\n`;
+  message += ` Name: ${name}\n`;
+  message += ` Phone: ${phone}\n`;
+  message += ` Address: ${address}\n\n`;
+  message += ` Items:\n`;
 
   cart.forEach(item => {
     message += `• ${item.name} × ${item.quantity} = ₹${item.price * item.quantity}\n`;
   });
 
-  message += `\n💰 Total: ₹${totalEl.textContent}`;
+  message += `\n Total: ₹${totalEl.textContent}`;
 
   const whatsappURL =
-    `https://wa.me/0000000000?text=${encodeURIComponent(message)}`;
+    `https://wa.me/8340737462?text=${encodeURIComponent(message)}`;
   window.open(whatsappURL, "_blank");
 };
 
 });
- 
