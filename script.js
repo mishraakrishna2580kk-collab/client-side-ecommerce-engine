@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
       id: 1,
       name: "Patanjali Honey", 
       price: 150,
-      image:"images/honey.jpg",
+      image:"honey.jpg",
       category: "grocery"
 
     },
@@ -14,14 +14,14 @@ document.addEventListener("DOMContentLoaded", function () {
       id: 2, 
       name: "Patanjali Dant Kanti", 
       price: 60,
-      image:"images/dantkanti.jpg",
+      image:"dantkanti.jpg",
       category: "personal"
     },
     { 
       id: 3, 
       name: "Patanjali Aloe Vera Gel", 
       price: 120 ,
-      image:"images/alovera.jpg",
+      image:"alovera.jpg",
       category: "cosmetic"
     },
   ];
