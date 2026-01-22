@@ -32,6 +32,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let cart = [];
 
+  /* Load cart from localstorage*/
+  function loadCart() {
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      cart=JSON.parse(savedCart);
+      renderCart();
+    }
+  }
+
+  //Save Cart to localstorage
+  function savecart() {
+    localStorage.storage.setItem("cart", JSON.stringify(cart));
+  }
+
   // Render products
   products.forEach(product => {
     const div = document.createElement("div");
