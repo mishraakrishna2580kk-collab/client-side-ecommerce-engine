@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
       id: 1,
       name: "Patanjali Honey", 
       price: 150,
-      image:"./honey.jpg",
+      image:"./assets/honey.jpg",
       category: "grocery"
 
     },
@@ -14,14 +14,14 @@ document.addEventListener("DOMContentLoaded", function () {
       id: 2, 
       name: "Patanjali Dant Kanti", 
       price: 60,
-      image:"./dantkanti.jpg",
+      image:"./assets/dantkanti.jpg",
       category: "personal"
     },
     { 
       id: 3, 
       name: "Patanjali Aloe Vera Gel", 
       price: 120 ,
-      image:"./alovera.jpg",
+      image:"./assets/alovera.jpg",
       category: "cosmetic"
     },
   ];
@@ -169,3 +169,4 @@ document.addEventListener("DOMContentLoaded", function () {
 };
 loadCart();
 });
+
