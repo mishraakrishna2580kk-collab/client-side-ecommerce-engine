@@ -263,3 +263,38 @@ body {
     border:1px solid #ccc;
     font-size: 16px;
 }
+#cart button{
+  margin: 0 5px;
+  padding: 4px 8px;
+  border:none;
+  background:#0f7c2a;
+  color:white;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+#cart button:hover{
+  background:#0c6522;
+}
+/*Cart Badge Styling*/
+.cart-badge{
+  margin-top:10px;
+  font-weight:bold;
+}
+.category-filter{
+  margin:20px 0;
+}
+
+.category-filter button{
+  margin-right:10px;
+  padding:8px 14px;
+  border:none;
+  background:#0f7c2a;
+  color:white;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.category-filter button:hover{
+  background:#0c6522;
+}

@@ -10,6 +10,9 @@
     <header class="header">
         <h1>Mishra Patanjali Stores</h1>
         <p>Pure Ayurvedic Products</p>
+        <div class="cart-badge">
+            Cart (<span id="cartCount">0</span>)
+        </div>
     </header>
     <!--Hero Section-->
     <section class="hero">
@@ -33,7 +36,7 @@
         <p><strong>Phone:</strong> +91-00000000000
 
         <a
-            href="https://wa.me/000000000"
+            href="https://wa.me/00000000000"
             target="_blank"
             class="btn"
         >
@@ -49,7 +52,14 @@
             placeholder="Search products...."
             class="search-box"
         />
+    <div class="category-filter">
 
+        <button onclick="filterProducts('all')">All</button>
+        <button onclick="filterProducts('grocery')">Grocery</button>
+        <button onclick="filterProducts('personal')">Personal</button>
+        <button onclick="filterProducts('cosmetic')">Cosmetic</button>
+
+    </div>
         <div class="product-list" id="productList">
             <!--Products will come from javascript-->
         </div>
