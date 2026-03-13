@@ -6,21 +6,24 @@ document.addEventListener("DOMContentLoaded", function () {
       name: "Patanjali Honey",
       price: 150,
       image: "./assets/honey.jpg",
-      category: "grocery"
+      category: "grocery",
+      rating: 4.5
     },
     {
       id: 2,
       name: "Patanjali Dant Kanti",
       price: 60,
       image: "./assets/dantkanti.jpg",
-      category: "personal"
+      category: "personal",
+      rating:4.8
     },
     {
       id: 3,
       name: "Patanjali Aloe Vera Gel",
       price: 120,
       image: "./assets/alovera.jpg",
-      category: "cosmetic"
+      category: "cosmetic",
+      rating: 4.7
     }
   ];
 
@@ -62,10 +65,17 @@ document.addEventListener("DOMContentLoaded", function () {
       const div = document.createElement("div");
       div.className = "product";
       div.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
-        <h4>${product.name}</h4>
-        <p>₹${product.price}</p>
-        <button onclick="addToCart(${product.id})">Add to Cart</button>
+      <img src="${product.image}" alt="${product.name}">
+
+      <h4>${product.name}</h4>
+
+      <p class="rating">⭐ ${product.rating}</p>
+
+      <p class="price">₹${product.price}</p>
+
+      <button onclick="addToCart(${product.id})" class="add-btn">
+      <i class="fa-solid fa-cart-plus"></i> Add
+      </button>
       `;
       productList.appendChild(div);
     });
@@ -84,6 +94,17 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 
   // Add to cart (exposed globally for onclick)
+  function showNotification(){
+
+  const note = document.getElementById("cartNotification");
+
+  note.style.display = "block";
+
+  setTimeout(()=>{
+    note.style.display = "none";
+  },2000);
+
+}
   window.addToCart = function (productId) {
     const product = products.find(p => p.id === productId);
     const existing = cart.find(item => item.id === productId);
@@ -95,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     renderCart();
+    showNotification();
   }
   window.increaseQty = function(id) {
 
@@ -128,9 +150,9 @@ window.removeItem = function(id) {
   };
 
   // Render cart
-  
+
   function renderCart() {
-    cartCountE1.textContent=
+    cartCountEl.textContent=
       cart.reduce((sum,item)=> sum+ item.quantity,0);
     
     cartList.innerHTML = "";
@@ -159,8 +181,30 @@ window.removeItem = function(id) {
       cartList.appendChild(li);
       total += item.price * item.quantity;
     });
+    const drawerCart = document.getElementById("drawerCart");
+drawerCart.innerHTML = "";
+
+cart.forEach(item => {
+
+const li = document.createElement("li");
+
+li.innerHTML = `
+${item.name}
+
+<button onclick="decreaseQty(${item.id})">-</button>
+${item.quantity}
+<button onclick="increaseQty(${item.id})">+</button>
+
+= ₹${item.price * item.quantity}
+`;
+
+drawerCart.appendChild(li);
+
+});
 
     totalEl.textContent = total;
+    document.getElementById("drawerTotal").textContent = total;
+    
 
     const orderBtn = document.getElementById("placeOrderBtn");
     if (cart.length === 0) {
@@ -218,4 +262,34 @@ window.removeItem = function(id) {
   // Initial load
   renderFilteredProducts(products);
   loadCart();
+});
+function openCart(){
+
+const drawer = document.getElementById("cartDrawer");
+const overlay = document.getElementById("cartOverlay");
+
+drawer.classList.add("open");
+overlay.style.display = "block";
+
+}
+
+function closeCart(){
+
+const drawer = document.getElementById("cartDrawer");
+const overlay = document.getElementById("cartOverlay");
+
+drawer.classList.remove("open");
+overlay.style.display = "none";
+
+}
+const observer = new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add("visible");
+}
+});
+});
+
+document.querySelectorAll(".why-card").forEach(el=>{
+observer.observe(el);
 });

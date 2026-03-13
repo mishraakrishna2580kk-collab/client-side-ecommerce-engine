@@ -1,39 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Mishra Patanjali Stores</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mishra Patanjali Stores</title>
+<link rel="stylesheet" href="style.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <!--Header-->
-    <header class="header">
-        <h1>Mishra Patanjali Stores</h1>
-        <p>Pure Ayurvedic Products</p>
-        <div class="cart-badge">
-            Cart (<span id="cartCount">0</span>)
-        </div>
-    </header>
-    <!--Hero Section-->
-    <section class="hero">
-        <h2>Welcome to our Store</h2>
-        <p>Trusted Patanjali Productsfor healthy lifestyle.</p>
-        <a href="#" class="btn">Order on WhatsApp</a>
-    </section>
-    <!--Info Section-->
-    <section class="info">
-        <h3>Why Choose Patanjali?</h3>
-        <p>
-            Patanjali offers natural, ayurvedic and swadeshi products that promote healthy living.
-        </p>
-    </section>
+<!--Header-->
+<header class="header">
+
+<div class="header-brand">
+<div class="header-logo">🌿</div>
+
+<div>
+<div class="header-title">Mishra Patanjali Store</div>
+<div class="header-subtitle">Pure Ayurvedic Products</div>
+</div>
+</div>
+
+<button class="cart-btn" onclick="openCart()">
+<i class="fa-solid fa-bag-shopping"></i>
+<span class="cart-count" id="cartCount">0</span>
+</button>
+
+</header>
+<!--Hero Section-->
+<section class="hero">
+
+<div class="hero-inner">
+
+<span class="hero-badge">
+100% Natural & Ayurvedic
+</span>
+
+<h2>Trusted Patanjali Products</h2>
+
+<p>
+Healthy lifestyle products made from natural ingredients.
+</p>
+
+<div class="hero-actions">
+<button class="btn-primary">Shop Now</button>
+<button class="btn-outline">Contact Us</button>
+</div>
+
+</div>
+
+</section>
     <!--Store Details-->
     <section class="store">
-        <h3>Store Deatils</h3>
-        <p><strong>owner:</strong> Mishra Patanjali Stores</p>
+        <h3>Store Details</h3>
+        <p><strong>Owner:</strong> Mishra Patanjali Stores</p>
         <p><strong>Address:</strong> G.M road In Front of Style Bazar Near Smart bazzar Darbhanga Bihar.</p>
         <p><strong>Timings:</strong> 10:00 AM - 9:00 PM</p>
-        <p><strong>Phone:</strong> +91-00000000000
+        <p><strong>Phone:</strong> +91-XXXXXXXXXXX</p>
 
         <a
             href="https://wa.me/00000000000"
@@ -43,23 +69,89 @@
           Order on WhatsApp
         </a>
     </section>
+    <section class="trust-bar">
+    <div class="trust-item">
+    <i class="fa-solid fa-leaf"></i>
+    <p>100% Natural</p>
+    </div>
+    <div class="trust-item">
+        <i class="fa-solid fa-truck-fast"></i>
+        <p>Fast Delivery</p>
+    </div>
+    <div class="trust-item">
+        <i class="fa-solid fa-certificate"></i>
+        <p>Genuine Products</p>
+        </div>
+    <div class="trust-item">
+        <i class="fa-brands fa-whatsapp"></i>
+        <p>Fast WhatsApp Orders</p>
+    </div>
+    <div class="trust-item">
+        <i class="fa-solid fa-store"></i>
+        <p>Trusted Store</p>
+    </div>
+    </section>
+    <section class="why-section">
+
+<h2>Why Choose Patanjali</h2>
+
+<div class="why-grid">
+
+<div class="why-card">
+<div class="why-icon">🌿</div>
+<h3>Natural Ingredients</h3>
+<p>Products made with Ayurvedic herbs.</p>
+</div>
+
+<div class="why-card">
+<div class="why-icon">🧘</div>
+<h3>Healthy Lifestyle</h3>
+<p>Support for balanced and healthy living.</p>
+</div>
+
+<div class="why-card">
+<div class="why-icon">🇮🇳</div>
+<h3>Made in India</h3>
+<p>Proudly supporting Indian manufacturing.</p>
+</div>
+
+<div class="why-card">
+<div class="why-icon">💚</div>
+<h3>Trusted by Millions</h3>
+<p>Popular brand across India.</p>
+</div>
+
+</div>
+
+</section>
     <!--Product Section-->
     <section class="products">
         <h3>Our Products</h3>
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search products...."
-            class="search-box"
-        />
-    <div class="category-filter">
+        <div class="search-filter-bar">
 
-        <button onclick="filterProducts('all')">All</button>
-        <button onclick="filterProducts('grocery')">Grocery</button>
-        <button onclick="filterProducts('personal')">Personal</button>
-        <button onclick="filterProducts('cosmetic')">Cosmetic</button>
+<div class="search-wrap">
+<i class="fa-solid fa-magnifying-glass"></i>
 
-    </div>
+<input
+type="text"
+id="searchInput"
+placeholder="Search products..."
+class="search-box"
+/>
+
+</div>
+
+<div class="category-filter">
+
+<button class="filter-btn" onclick="filterProducts('all')">🌾 All</button>
+<button class="filter-btn" onclick="filterProducts('grocery')">🌾 Grocery</button>
+<button class="filter-btn" onclick="filterProducts('personal')">🧴 Personal</button>
+<button class="filter-btn" onclick="filterProducts('cosmetic')">✨ Cosmetic</button>
+
+</div>
+
+</div>
+
         <div class="product-list" id="productList">
             <!--Products will come from javascript-->
         </div>
@@ -99,8 +191,24 @@
     <!--Footer-->
     <footer class="footer">
         <p>© 2025 Mishra Patanjali Store</p>
-    </footer>
+    </footer> <div id="cartNotification" class="notification">
+    ✔ Added to cart
+    </div>
+
     <script src="script.js"></script>
+    <div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
+    <div id="cartDrawer" class="cart-drawer">
+
+  <div class="cart-drawer-header">
+    <h3>Your Cart</h3>
+    <button onclick="closeCart()">✖</button>
+  </div>
+
+  <ul id="drawerCart"></ul>
+
+  <p><strong>Total: ₹<span id="drawerTotal">0</span></strong></p>
+
+</div>
 
 </body>
 </html>
