@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offline AI Identity System</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c10;
+  --bg2: #111520;
+  --bg3: #1a2030;
+  --border: #1e2535;
+  --border2: #2a3550;
+  --text: #e2e8f4;
+  --text2: #8a9ab8;
+  --text3: #4a5a78;
+  --accent: #4f9cf9;
+  --accent2: #6ee7b7;
+  --amber: #f59e0b;
+  --purple: #a78bfa;
+  --coral: #fb7185;
+  --green: #86efac;
+  --blue-bg: rgba(79,156,249,0.08);
+  --blue-border: rgba(79,156,249,0.3);
+  --teal-bg: rgba(110,231,183,0.08);
+  --teal-border: rgba(110,231,183,0.3);
+  --amber-bg: rgba(245,158,11,0.08);
+  --amber-border: rgba(245,158,11,0.3);
+  --purple-bg: rgba(167,139,250,0.08);
+  --purple-border: rgba(167,139,250,0.3);
+  --coral-bg: rgba(251,113,133,0.08);
+  --coral-border: rgba(251,113,133,0.3);
+  --green-bg: rgba(134,239,172,0.08);
+  --green-border: rgba(134,239,172,0.3);
+  --warn-bg: rgba(245,158,11,0.08);
+  --warn-border: rgba(245,158,11,0.35);
+  --info-bg: rgba(79,156,249,0.08);
+  --info-border: rgba(79,156,249,0.35);
+  --success-bg: rgba(110,231,183,0.08);
+  --success-border: rgba(110,231,183,0.35);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font-mono: 'Space Mono', monospace;
+  --font: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid overlay for atmosphere */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(79,156,249,0.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(79,156,249,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── HEADER ─── */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(10,12,16,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+}
+.header-top {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.logo span { color: var(--text3); }
+.header-badges { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.hbadge {
+  font-size: 10px; font-family: var(--font-mono);
+  padding: 2px 8px; border-radius: 20px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text2);
+}
+.hbadge.on { background: var(--teal-bg); border-color: var(--teal-border); color: var(--accent2); }
+
+/* ─── NAV ─── */
+.nav {
+  display: flex; overflow-x: auto; scrollbar-width: none;
+  padding: 0 8px;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  padding: 9px 14px; font-size: 12px; font-family: var(--font-mono);
+  color: var(--text3); cursor: pointer; white-space: nowrap;
+  transition: all .2s; letter-spacing: 0.02em;
+}
+.nav-btn:hover { color: var(--text); }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ─── SECTIONS ─── */
+.section { display: none; }
+.section.active { display: block; }
+.content { max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem 5rem; position: relative; z-index: 1; }
+
+h1 {
+  font-size: 28px; font-weight: 600; margin-bottom: 6px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+h2 { font-size: 17px; font-weight: 500; margin: 2rem 0 0.75rem; color: var(--text); }
+h3 { font-size: 14px; font-weight: 500; margin: 1rem 0 0.35rem; color: var(--text); }
+h4 { font-size: 13px; font-weight: 500; margin-bottom: 3px; color: var(--text); }
+p { font-size: 14px; line-height: 1.8; color: var(--text2); margin-bottom: 0.6rem; }
+.lead { font-size: 15px; color: var(--text2); line-height: 1.85; margin-bottom: 1.5rem; }
+code {
+  font-family: var(--font-mono); font-size: 11px;
+  background: var(--bg3); color: var(--accent2);
+  padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border2);
+}
+hr { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
+
+/* ─── BADGES ─── */
+.badge {
+  display: inline-block; font-size: 10px; font-family: var(--font-mono);
+  font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-right: 4px; margin-bottom: 4px;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.badge-blue { background: var(--blue-bg); color: var(--accent); border: 1px solid var(--blue-border); }
+.badge-teal { background: var(--teal-bg); color: var(--accent2); border: 1px solid var(--teal-border); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+.badge-coral { background: var(--coral-bg); color: var(--coral); border: 1px solid var(--coral-border); }
+.badge-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1rem;
+  transition: border-color .2s;
+}
+.card:hover { border-color: var(--border2); }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-bottom: 1rem; }
+
+/* ─── METRICS ─── */
+.metric {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem 1.2rem;
+  transition: border-color .2s;
+}
+.metric:hover { border-color: var(--accent); }
+.metric-label { font-size: 11px; font-family: var(--font-mono); color: var(--text3); margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+.metric-value { font-size: 26px; font-weight: 600; color: var(--accent); font-family: var(--font-mono); }
+
+/* ─── FLOW STEPS ─── */
+.flow-step { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 1.1rem; }
+.step-num {
+  min-width: 28px; height: 28px; border-radius: 50%;
+  background: var(--blue-bg); border: 1px solid var(--blue-border);
+  color: var(--accent); display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-family: var(--font-mono); font-weight: 700; flex-shrink: 0;
+}
+.step-body h4 { color: var(--text); }
+.step-body p { font-size: 13px; margin-bottom: 0; }
+
+/* ─── BOXES ─── */
+.warn-box {
+  background: var(--warn-bg); border: 1px solid var(--warn-border);
+  border-radius: var(--radius); padding: 0.9rem 1.1rem; margin-bottom: 1rem;
+  font-size: 13px; color: var(--amber); line-height: 1.7;
+}
+.info-box {
+  background: var(--info-bg); border: 1px solid var(--info-border);
+  border-radius: var(--radius); padding: 0.9rem 1.1rem; margin-bottom: 1rem;
+  font-size: 13px; color: var(--accent); line-height: 1.7;
+}
+.success-box {
+  background: var(--success-bg); border: 1px solid var(--success-border);
+  border-radius: var(--radius); padding: 0.9rem 1.1rem; margin-bottom: 1rem;
+  font-size: 13px; color: var(--accent2); line-height: 1.7;
+}
+
+/* ─── TABLES ─── */
+.tech-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 1rem; }
+.tech-table th {
+  text-align: left; font-weight: 500; padding: 7px 12px;
+  border-bottom: 1px solid var(--border); font-size: 11px;
+  color: var(--text3); font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase;
+}
+.tech-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text2); }
+.tech-table tr:last-child td { border-bottom: none; }
+.tech-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ─── TIMELINE ─── */
+.timeline { position: relative; padding-left: 30px; }
+.timeline::before {
+  content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+  width: 1px; background: var(--border2);
+}
+.tl-item { position: relative; margin-bottom: 1.5rem; }
+.tl-dot {
+  position: absolute; left: -26px; top: 4px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 8px var(--accent);
+}
+.tl-phase { font-size: 10px; font-family: var(--font-mono); color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+.tl-title { font-size: 15px; font-weight: 500; margin: 2px 0 4px; color: var(--text); }
+.tl-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+/* ─── ASK BUTTONS ─── */
+.ask-btn {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); padding: 6px 13px; font-size: 12px;
+  font-family: var(--font-mono); cursor: pointer; color: var(--text2);
+  margin: 4px; transition: all .2s;
+}
+.ask-btn:hover {
+  background: var(--blue-bg); border-color: var(--blue-border);
+  color: var(--accent);
+}
+
+/* ─── TWO COL ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ─── CODE BLOCK ─── */
+.code-block {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 12px 14px;
+  font-family: var(--font-mono); font-size: 12px; color: var(--accent2);
+  line-height: 1.7; margin-bottom: 10px; overflow-x: auto;
+}
+.code-comment { color: var(--text3); }
+.code-key { color: var(--purple); }
+.code-val { color: var(--amber); }
+
+/* ─── SVG WRAPPERS ─── */
+.svg-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem;
+  margin: 1rem 0; overflow-x: auto;
+}
+.svg-wrap svg text { font-family: var(--font), sans-serif !important; }
+
+/* ─── AI CHAT PANEL ─── */
+#ai-panel {
+  position: fixed; bottom: 20px; right: 20px;
+  width: 380px; max-height: 520px;
+  background: var(--bg2); border: 1px solid var(--blue-border);
+  border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(79,156,249,0.1);
+  display: flex; flex-direction: column;
+  z-index: 200; opacity: 0; transform: translateY(20px) scale(0.95);
+  transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+#ai-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+.ai-panel-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+}
+.ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+.ai-title { font-family: var(--font-mono); font-size: 12px; color: var(--accent2); }
+.ai-close {
+  margin-left: auto; background: none; border: none;
+  color: var(--text3); cursor: pointer; font-size: 18px; line-height: 1;
+  transition: color .15s;
+}
+.ai-close:hover { color: var(--text); }
+.ai-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.ai-msg {
+  padding: 9px 12px; border-radius: 10px; font-size: 13px; line-height: 1.65;
+  max-width: 92%;
+}
+.ai-msg.user {
+  background: var(--blue-bg); border: 1px solid var(--blue-border);
+  color: var(--accent); align-self: flex-end; font-family: var(--font-mono); font-size: 12px;
+}
+.ai-msg.assistant {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); align-self: flex-start;
+}
+.ai-msg.loading { color: var(--text3); font-style: italic; }
+.ai-input-row {
+  display: flex; gap: 8px; padding: 12px 14px;
+  border-top: 1px solid var(--border);
+}
+.ai-input {
+  flex: 1; background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px;
+  color: var(--text); font-family: var(--font); outline: none;
+  transition: border-color .2s;
+}
+.ai-input:focus { border-color: var(--blue-border); }
+.ai-input::placeholder { color: var(--text3); }
+.ai-send {
+  background: var(--blue-bg); border: 1px solid var(--blue-border);
+  color: var(--accent); padding: 8px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 14px; transition: all .2s;
+}
+.ai-send:hover { background: var(--accent); color: var(--bg); }
+.ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ─── FLOATING AI TOGGLE ─── */
+#ai-toggle {
+  position: fixed; bottom: 20px; right: 20px;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none; cursor: pointer; color: var(--bg);
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(79,156,249,0.4);
+  transition: all .2s; z-index: 201;
+}
+#ai-toggle:hover { transform: scale(1.1); box-shadow: 0 6px 30px rgba(79,156,249,0.6); }
+#ai-toggle.hidden { display: none; }
+
+/* ─── HERO TAG ─── */
+.hero-tag {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* SVG text overrides for dark theme */
+.svg-wrap svg { font-family: 'DM Sans', sans-serif; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-top">
+    <div class="logo">OFFLINE<span>_</span>AI<span>_</span>IDENTITY<span> // </span>SYSTEM</div>
+    <div class="header-badges">
+      <span class="hbadge on">● OFFLINE-FIRST</span>
+      <span class="hbadge on">● E2E ENCRYPTED</span>
+      <span class="hbadge">MESH READY</span>
+      <span class="hbadge">v0.1-PROTOTYPE</span>
+    </div>
+  </div>
+  <nav class="nav" id="nav">
+    <button class="nav-btn active" onclick="show('start-here')">🚀 Start Here</button>
+    <button class="nav-btn" onclick="show('overview')">Overview</button>
+    <button class="nav-btn" onclick="show('architecture')">Architecture</button>
+    <button class="nav-btn" onclick="show('ai-clone')">AI Clone</button>
+    <button class="nav-btn" onclick="show('mesh-net')">Mesh Network</button>
+    <button class="nav-btn" onclick="show('data-flow')">Data Flow</button>
+    <button class="nav-btn" onclick="show('tech-stack')">Tech Stack</button>
+    <button class="nav-btn" onclick="show('security')">Security</button>
+    <button class="nav-btn" onclick="show('roadmap')">Roadmap</button>
+    <button class="nav-btn" onclick="show('glossary')">Glossary</button>
+  </nav>
+</header>
+
+<!-- ═══════ START HERE ═══════ -->
+<section class="section active" id="start-here">
+<div class="content">
+  <div class="hero-tag">👉 Beginner Implementation Guide</div>
+  <h1>Start Here — Your Execution Path</h1>
+  <p class="lead">This document is a complete system design. But a system design is not a build order. This tab is your missing map: where to open your editor, what to type first, and what to ignore until later.</p>
+
+  <div class="warn-box">
+    <strong>Read this before anything else:</strong> The rest of this document describes the <em>final vision</em>. If you start there, you will be paralyzed. Start here, build something that works in a day, then grow it incrementally. Every expert project starts as a bad prototype.
+  </div>
+
+  <h2>### MVP Version (Start Here)</h2>
+  <p>Ignore mesh networking, encryption, fine-tuning, and Android for now. Your first goal is a working AI chat that runs on your laptop. Here is the 4-step MVP ladder — each step is a demo-able checkpoint:</p>
+
+  <div class="flow-step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Step 1 — Build a simple local chat AI (2–4 hours)</h4>
+      <p>A Python backend that accepts a text question and returns an AI answer. No custom training. No mobile app. Just a working API you can call from your browser or terminal. This is your foundation — everything else is built on top of it.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Step 2 — Add memory with RAG (1–2 days)</h4>
+      <p>Store some text about yourself in a file. Connect your AI so it reads that file before answering. Now it "knows" about you — without any training. This replaces fine-tuning for the MVP phase.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Step 3 — Add device-to-device communication (1–2 days)</h4>
+      <p>Use basic Python sockets (TCP) to send a message from one laptop to another on the same WiFi. No mesh. No encryption. Just prove two machines can exchange text over the network you already have.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Step 4 — Combine everything (1–3 days)</h4>
+      <p>Device B sends a question over the socket → Device A's AI answers using the RAG knowledge base → response is sent back to Device B. This is your MVP: a two-device offline AI that answers as "you". Everything after this is polish and hardening.</p>
+    </div>
+  </div>
+
+  <div class="success-box">
+    <strong>Your MVP target:</strong> Two laptops on the same WiFi, no internet needed, one asks a question, the other responds using AI with your personal context. Achievable in a weekend. Already CV-worthy.
+  </div>
+
+  <hr>
+
+  <h2>Practical Development Flow</h2>
+  <div class="two-col">
+    <div class="card" style="margin:0">
+      <div class="badge badge-green">Build first</div>
+      <h3>What to build immediately</h3>
+      <p>Local Python AI server (FastAPI + llama.cpp or Ollama), a simple RAG pipeline using plain text files or ChromaDB, a basic socket server/client, and a minimal chat UI (HTML or terminal).</p>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="badge badge-coral">Ignore for now</div>
+      <h3>What to skip until MVP works</h3>
+      <p>Fine-tuning / LoRA training, mesh routing, Bluetooth/WiFi-Direct, Android app, end-to-end encryption, multi-hop routing, model quantization, and Kiwix Wikipedia. These are Phase 2+.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <h3>When to move to advanced features</h3>
+    <table class="tech-table">
+      <thead><tr><th>Milestone achieved</th><th>Next unlock</th></tr></thead>
+      <tbody>
+        <tr><td>AI answers questions via API</td><td>Add RAG (personal knowledge)</td></tr>
+        <tr><td>RAG works with your text files</td><td>Add socket networking</td></tr>
+        <tr><td>Two devices can chat via sockets</td><td>Move to WiFi-Direct on Android</td></tr>
+        <tr><td>Android P2P works</td><td>Add encryption layer</td></tr>
+        <tr><td>Encrypted P2P works</td><td>Add multi-hop mesh routing</td></tr>
+        <tr><td>Mesh routing works</td><td>Fine-tune model on your data</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <h2>Where to Start Coding — First File, First Run</h2>
+  <p>Here is exactly what to do on Day 1. You will create one Python file and have a working AI endpoint running in under 30 minutes.</p>
+
+  <div class="card">
+    <h3>Project setup (do this once)</h3>
+    <div class="code-block">
+<span class="code-comment"># Install prerequisites</span>
+pip install fastapi uvicorn requests
+pip install ollama  <span class="code-comment"># or: pip install llama-cpp-python</span>
+
+<span class="code-comment"># Install Ollama desktop app from ollama.ai, then:</span>
+ollama pull llama3.2:3b  <span class="code-comment"># downloads ~2GB model to your machine</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>main.py — your first working AI server</h3>
+    <div class="code-block">
+<span class="code-key">from</span> fastapi <span class="code-key">import</span> FastAPI
+<span class="code-key">import</span> ollama
+
+app = FastAPI()
+
+@app.post(<span class="code-val">"/ask"</span>)
+<span class="code-key">def</span> ask(prompt: str):
+    response = ollama.chat(
+        model=<span class="code-val">"llama3.2:3b"</span>,
+        messages=[{<span class="code-val">"role"</span>: <span class="code-val">"user"</span>, <span class="code-val">"content"</span>: prompt}]
+    )
+    <span class="code-key">return</span> {<span class="code-val">"answer"</span>: response[<span class="code-val">'message'</span>][<span class="code-val">'content'</span>]}
+
+<span class="code-comment"># Run: uvicorn main:app --reload</span>
+<span class="code-comment"># Test: curl -X POST "http://localhost:8000/ask?prompt=Hello"</span>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>What just happened?</strong> You now have a working AI endpoint on your machine. No cloud. No API key. No internet needed (after the one-time model download). This is the foundation of everything.
+  </div>
+
+  <div class="card">
+    <h3>Step 2: Add RAG — your personal knowledge base</h3>
+    <div class="code-block">
+pip install chromadb sentence-transformers
+
+<span class="code-comment"># Create about_me.txt — write facts about yourself</span>
+<span class="code-comment"># "My name is Arjun. I study ECE at IIT. I prefer Python over Java..."</span>
+    </div>
+    <div class="code-block">
+<span class="code-key">import</span> chromadb
+<span class="code-key">from</span> sentence_transformers <span class="code-key">import</span> SentenceTransformer
+
+client = chromadb.Client()
+collection = client.create_collection(<span class="code-val">"my_knowledge"</span>)
+
+<span class="code-comment"># Load and index your personal text file</span>
+<span class="code-key">with</span> open(<span class="code-val">"about_me.txt"</span>) <span class="code-key">as</span> f:
+    chunks = f.read().split(<span class="code-val">"\n\n"</span>)  <span class="code-comment"># split into paragraphs</span>
+
+model = SentenceTransformer(<span class="code-val">"all-MiniLM-L6-v2"</span>)
+embeddings = model.encode(chunks).tolist()
+collection.add(documents=chunks, embeddings=embeddings, ids=[str(i) <span class="code-key">for</span> i <span class="code-key">in</span> range(len(chunks))])
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Step 3: Socket networking (two devices, no internet)</h3>
+    <div class="code-block">
+<span class="code-comment"># server.py (run on Device A)</span>
+<span class="code-key">import</span> socket
+s = socket.socket(); s.bind((<span class="code-val">''</span>, <span class="code-val">9999</span>)); s.listen(<span class="code-val">1</span>)
+conn, _ = s.accept()
+question = conn.recv(<span class="code-val">1024</span>).decode()
+answer = ask_your_ai(question)  <span class="code-comment"># call your FastAPI endpoint</span>
+conn.send(answer.encode())
+
+<span class="code-comment"># client.py (run on Device B)</span>
+<span class="code-key">import</span> socket
+s = socket.socket(); s.connect((<span class="code-val">"DEVICE_A_IP"</span>, <span class="code-val">9999</span>))
+s.send(<span class="code-val">"What do I think about ECE vs CS?"</span>.encode())
+print(s.recv(<span class="code-val">4096</span>).decode())
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('Walk me through setting up a Python FastAPI server with Ollama step by step')">Setup FastAPI + Ollama ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('How do I implement RAG using ChromaDB and sentence transformers in Python?')">Implement RAG with ChromaDB ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('Write a simple Python socket server and client for two devices on the same WiFi')">Socket networking example ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ OVERVIEW ═══════ -->
+<section class="section" id="overview">
+<div class="content">
+  <div class="hero-tag">// SYSTEM OVERVIEW</div>
+  <h1>Offline AI Identity System</h1>
+  <p class="lead">An AI clone that runs entirely on your device, represents you across an offline mesh network, and answers as you — with no internet, no cloud, no central server. Your identity, distributed.</p>
+
+  <div class="card-grid">
+    <div class="metric"><div class="metric-label">Core concept</div><div class="metric-value" style="font-size:18px;color:var(--accent2)">AI Clone</div></div>
+    <div class="metric"><div class="metric-label">Network type</div><div class="metric-value" style="font-size:18px;color:var(--purple)">P2P Mesh</div></div>
+    <div class="metric"><div class="metric-label">Internet required</div><div class="metric-value" style="font-size:18px;color:var(--accent2)">Zero</div></div>
+    <div class="metric"><div class="metric-label">Privacy model</div><div class="metric-value" style="font-size:18px;color:var(--amber)">E2E</div></div>
+  </div>
+
+  <h2>What is this system?</h2>
+  <p>An Offline AI Identity System is a combination of three things: (1) a fine-tuned language model trained to sound like you, (2) a secure identity layer that proves messages actually come from your AI, and (3) a mesh networking layer that routes messages between devices without the internet.</p>
+
+  <div class="two-col">
+    <div class="card" style="margin:0">
+      <div class="badge badge-blue">Problem it solves</div>
+      <h3>No internet? No problem.</h3>
+      <p>In disaster zones, remote areas, or privacy-sensitive contexts, you can still communicate and have your AI answer questions on your behalf — over direct device-to-device connections.</p>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="badge badge-teal">What makes it unique</div>
+      <h3>Your AI, not a generic one</h3>
+      <p>Unlike generic chatbots, this AI is trained specifically on your writing, your opinions, your tone. When it answers, it answers as you — not as a neutral assistant.</p>
+    </div>
+  </div>
+
+  <h2>Three-sentence summary</h2>
+  <div class="card">
+    <p style="margin-bottom:0.5rem">You collect your personal data (chats, emails, notes) and fine-tune a small open-source language model to sound like you. That model runs entirely on your phone using <code>llama.cpp</code> or <code>MLC LLM</code> — no internet, no servers. Other devices can query your AI clone over a peer-to-peer WiFi mesh — your identity, distributed across the network.</p>
+  </div>
+
+  <h2>Key use cases</h2>
+  <table class="tech-table">
+    <thead><tr><th>Scenario</th><th>How it helps</th></tr></thead>
+    <tbody>
+      <tr><td>Disaster recovery / no internet</td><td>Communicate with communities, share knowledge offline</td></tr>
+      <tr><td>Remote fieldwork</td><td>AI assistant with your expertise, no connectivity needed</td></tr>
+      <tr><td>Privacy-first communication</td><td>Messages never leave local mesh — no cloud logging</td></tr>
+      <tr><td>Digital legacy</td><td>Your AI preserves your knowledge and communication style</td></tr>
+      <tr><td>Distributed education</td><td>Your AI tutors students even when you're not present</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What this project is NOT</h2>
+  <div class="warn-box">
+    This is <strong>not</strong> a cloud AI service, not a social media platform, not a surveillance tool. This system is privacy-first by design — your model and data never leave your device unless you explicitly share them. It is also not a replacement for human communication — it is a tool to extend your reach when normal communication is unavailable.
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('What are the most important use cases for offline AI systems in 2025?')">Use cases for offline AI ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('What is a digital twin concept in AI?')">What is a digital twin? ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ ARCHITECTURE ═══════ -->
+<section class="section" id="architecture">
+<div class="content">
+  <div class="hero-tag">// SYSTEM ARCHITECTURE</div>
+  <h1>Three-Layer Architecture</h1>
+  <p class="lead">The system is built in three distinct layers: a one-time training pipeline, an on-device identity app, and a mesh network transport. Each layer has a clear responsibility.</p>
+
+  <div class="svg-wrap">
+    <svg width="100%" viewBox="0 0 680 530" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#4f9cf9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Layer 1: Training -->
+      <rect x="20" y="15" width="640" height="130" rx="12" fill="rgba(79,156,249,0.06)" stroke="rgba(79,156,249,0.3)" stroke-width="1"/>
+      <text x="38" y="38" font-size="10" font-weight="600" fill="#4f9cf9" letter-spacing="1">LAYER 1 — TRAINING PIPELINE (one-time)</text>
+
+      <rect x="40" y="52" width="118" height="72" rx="8" fill="rgba(79,156,249,0.12)" stroke="rgba(79,156,249,0.4)" stroke-width="0.8"/>
+      <text x="99" y="82" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Your Data</text>
+      <text x="99" y="100" text-anchor="middle" font-size="10" fill="#8a9ab8">chats, notes, email</text>
+
+      <line x1="158" y1="88" x2="200" y2="88" stroke="#4f9cf9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <rect x="200" y="52" width="128" height="72" rx="8" fill="rgba(79,156,249,0.12)" stroke="rgba(79,156,249,0.4)" stroke-width="0.8"/>
+      <text x="264" y="82" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Data Cleaning</text>
+      <text x="264" y="100" text-anchor="middle" font-size="10" fill="#8a9ab8">filter, format, label</text>
+
+      <line x1="328" y1="88" x2="370" y2="88" stroke="#4f9cf9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <rect x="370" y="52" width="118" height="72" rx="8" fill="rgba(79,156,249,0.12)" stroke="rgba(79,156,249,0.4)" stroke-width="0.8"/>
+      <text x="429" y="82" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Fine-Tuning</text>
+      <text x="429" y="100" text-anchor="middle" font-size="10" fill="#8a9ab8">LoRA / QLoRA</text>
+
+      <line x1="488" y1="88" x2="530" y2="88" stroke="#4f9cf9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <rect x="530" y="52" width="116" height="72" rx="8" fill="rgba(79,156,249,0.25)" stroke="rgba(79,156,249,0.6)" stroke-width="1"/>
+      <text x="588" y="82" text-anchor="middle" font-size="12" font-weight="600" fill="#e2e8f4">Your Model</text>
+      <text x="588" y="100" text-anchor="middle" font-size="10" fill="#6ee7b7">.gguf quantized</text>
+
+      <!-- Arrow down -->
+      <line x1="588" y1="124" x2="588" y2="175" stroke="#4f9cf9" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+      <!-- Layer 2: Identity App -->
+      <rect x="20" y="170" width="640" height="155" rx="12" fill="rgba(110,231,183,0.04)" stroke="rgba(110,231,183,0.25)" stroke-width="1"/>
+      <text x="38" y="192" font-size="10" font-weight="600" fill="#6ee7b7" letter-spacing="1">LAYER 2 — IDENTITY APP (on your device)</text>
+
+      <rect x="40" y="205" width="130" height="100" rx="8" fill="rgba(110,231,183,0.1)" stroke="rgba(110,231,183,0.35)" stroke-width="0.8"/>
+      <text x="105" y="233" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Identity Engine</text>
+      <text x="105" y="251" text-anchor="middle" font-size="10" fill="#6ee7b7">your AI model</text>
+      <text x="105" y="269" text-anchor="middle" font-size="10" fill="#6ee7b7">runs on-device</text>
+
+      <rect x="195" y="205" width="130" height="100" rx="8" fill="rgba(110,231,183,0.1)" stroke="rgba(110,231,183,0.35)" stroke-width="0.8"/>
+      <text x="260" y="233" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Personality Store</text>
+      <text x="260" y="251" text-anchor="middle" font-size="10" fill="#6ee7b7">tone, preferences</text>
+      <text x="260" y="269" text-anchor="middle" font-size="10" fill="#6ee7b7">encrypted SQLite</text>
+
+      <rect x="350" y="205" width="130" height="100" rx="8" fill="rgba(110,231,183,0.1)" stroke="rgba(110,231,183,0.35)" stroke-width="0.8"/>
+      <text x="415" y="233" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Knowledge Base</text>
+      <text x="415" y="251" text-anchor="middle" font-size="10" fill="#6ee7b7">offline Wikipedia</text>
+      <text x="415" y="269" text-anchor="middle" font-size="10" fill="#6ee7b7">your documents</text>
+
+      <rect x="505" y="205" width="130" height="100" rx="8" fill="rgba(110,231,183,0.18)" stroke="rgba(110,231,183,0.5)" stroke-width="1"/>
+      <text x="570" y="233" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Crypto Layer</text>
+      <text x="570" y="251" text-anchor="middle" font-size="10" fill="#6ee7b7">E2E encryption</text>
+      <text x="570" y="269" text-anchor="middle" font-size="10" fill="#6ee7b7">identity signing</text>
+
+      <!-- Arrow down -->
+      <line x1="340" y1="325" x2="340" y2="370" stroke="#6ee7b7" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+      <!-- Layer 3: Mesh -->
+      <rect x="20" y="365" width="640" height="155" rx="12" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.25)" stroke-width="1"/>
+      <text x="38" y="387" font-size="10" font-weight="600" fill="#f59e0b" letter-spacing="1">LAYER 3 — MESH NETWORK TRANSPORT</text>
+
+      <rect x="40" y="400" width="130" height="100" rx="8" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.35)" stroke-width="0.8"/>
+      <text x="105" y="428" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Mesh Radio</text>
+      <text x="105" y="446" text-anchor="middle" font-size="10" fill="#f59e0b">WiFi-Direct</text>
+      <text x="105" y="464" text-anchor="middle" font-size="10" fill="#f59e0b">Bluetooth LE</text>
+
+      <rect x="195" y="400" width="130" height="100" rx="8" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.35)" stroke-width="0.8"/>
+      <text x="260" y="428" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Message Router</text>
+      <text x="260" y="446" text-anchor="middle" font-size="10" fill="#f59e0b">hop-by-hop</text>
+      <text x="260" y="464" text-anchor="middle" font-size="10" fill="#f59e0b">delay-tolerant</text>
+
+      <rect x="350" y="400" width="130" height="100" rx="8" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.35)" stroke-width="0.8"/>
+      <text x="415" y="428" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Sync Engine</text>
+      <text x="415" y="446" text-anchor="middle" font-size="10" fill="#f59e0b">model updates</text>
+      <text x="415" y="464" text-anchor="middle" font-size="10" fill="#f59e0b">file sharing</text>
+
+      <rect x="505" y="400" width="130" height="100" rx="8" fill="rgba(245,158,11,0.18)" stroke="rgba(245,158,11,0.5)" stroke-width="1"/>
+      <text x="570" y="428" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Discovery</text>
+      <text x="570" y="446" text-anchor="middle" font-size="10" fill="#f59e0b">find devices</text>
+      <text x="570" y="464" text-anchor="middle" font-size="10" fill="#f59e0b">mDNS / BLE adv.</text>
+    </svg>
+  </div>
+
+  <h2>Layer responsibilities</h2>
+  <table class="tech-table">
+    <thead><tr><th>Layer</th><th>What it does</th><th>When it runs</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-blue">Layer 1</span> Training Pipeline</td><td>Converts your data into a fine-tuned AI model file (.gguf)</td><td>Once (desktop, GPU needed)</td></tr>
+      <tr><td><span class="badge badge-teal">Layer 2</span> Identity App</td><td>Runs the model, stores personality, handles encryption</td><td>Always (on your phone)</td></tr>
+      <tr><td><span class="badge badge-amber">Layer 3</span> Mesh Transport</td><td>Routes packets between devices over WiFi-Direct / BLE</td><td>When connected to mesh</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('Explain what quantized models are and why they are used on-device')">What is model quantization? ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('What is delay-tolerant networking and how does it work?')">What is DTN? ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ AI CLONE ═══════ -->
+<section class="section" id="ai-clone">
+<div class="content">
+  <div class="hero-tag">// AI CLONE MODULE</div>
+  <h1>AI Clone — Your Digital Twin</h1>
+  <p class="lead">How a language model is trained to sound, think, and reason like you — and how it runs entirely on your device without internet.</p>
+
+  <h2>Step 1 — Collect your personal data</h2>
+  <p>The AI clone needs examples of how you communicate. Think of this as teaching a student by showing them thousands of examples of your writing and thinking.</p>
+
+  <div class="card">
+    <h3>Data sources (what you feed the model)</h3>
+    <table class="tech-table">
+      <thead><tr><th>Source</th><th>What it captures</th><th>Format</th></tr></thead>
+      <tbody>
+        <tr><td>WhatsApp / Telegram chats</td><td>Your casual tone, humor, expressions</td><td>JSON export</td></tr>
+        <tr><td>Emails you've written</td><td>Your formal/professional voice</td><td>MBOX / CSV</td></tr>
+        <tr><td>Notes / journal entries</td><td>Your private thinking and opinions</td><td>Plain text, Markdown</td></tr>
+        <tr><td>Twitter / social posts</td><td>Your public personality</td><td>JSON via API</td></tr>
+        <tr><td>Documents / essays</td><td>Your reasoning and analysis style</td><td>PDF, DOCX, TXT</td></tr>
+        <tr><td>Voice transcripts</td><td>How you speak naturally</td><td>Whisper-transcribed text</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warn-box">
+    <strong>Privacy warning:</strong> This data is highly personal. It never leaves your device during training or inference. Use a local training setup (not cloud services unless you trust them). Consider carefully what data you include — the model will learn from everything.
+  </div>
+
+  <h2>Step 2 — Clean and format the data</h2>
+  <p>Raw exported data is messy. You need to convert it into a format the model understands: question-answer pairs called "prompt-completion" pairs.</p>
+
+  <div class="card">
+    <h3>Example: converting a chat into training data</h3>
+    <p style="margin-bottom:8px;font-size:13px">Raw export:</p>
+    <div class="code-block">Friend: "bro should I take CS or ECE?"
+You: "honestly ECE gives you more flexibility, you can still code but also do hardware. CS is too narrow imo"</div>
+    <p style="margin-bottom:8px;font-size:13px">Converted to training format (JSONL):</p>
+    <div class="code-block"><span class="code-key">{</span><span class="code-val">"prompt"</span>: <span class="code-val">"Someone asks: should I take CS or ECE?"</span>,
+ <span class="code-val">"completion"</span>: <span class="code-val">"Honestly ECE gives you more flexibility..."</span><span class="code-key">}</span></div>
+  </div>
+
+  <h2>Step 3 — Choose a base model</h2>
+  <p>You don't build an AI from scratch. You start with a pre-trained open-source model and fine-tune it with your data.</p>
+
+  <div class="card-grid">
+    <div class="card" style="margin:0">
+      <div class="badge badge-blue">Recommended</div>
+      <h3>Mistral 7B / Llama 3.2 3B</h3>
+      <p>Small enough to run on a phone (quantized), powerful enough to have a personality. Open source, free. Best balance of size and capability.</p>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="badge badge-teal">Ultra-lightweight</div>
+      <h3>Phi-3 Mini / Gemma 2B</h3>
+      <p>Even smaller — runs on 2GB RAM. Less capable but works on older phones. Good for MVP testing before committing to a larger model.</p>
+    </div>
+  </div>
+
+  <h2>Step 4 — Fine-tuning with LoRA</h2>
+  <p>Fine-tuning means adjusting the model's weights using your data. LoRA (Low-Rank Adaptation) is a clever technique that fine-tunes only a small fraction of the model's parameters — making it fast and cheap.</p>
+
+  <div class="flow-step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Load base model + your dataset</h4>
+      <p>Open-source tools: <code>transformers</code>, <code>peft</code>, <code>trl</code> libraries in Python</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Apply LoRA configuration</h4>
+      <p>Add small trainable "adapter" layers on top of frozen model weights. You only update ~1% of parameters — much faster than full fine-tuning.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Train for a few hours on a GPU</h4>
+      <p>Use a consumer GPU (RTX 3060+) or Google Colab free tier. Training on 10,000 conversation examples takes ~2-4 hours.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Quantize the model to GGUF format</h4>
+      <p>Quantization shrinks the model from ~14GB to ~4GB by reducing number precision. Use <code>llama.cpp</code> for conversion. Q4_K_M is the recommended quantization level.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Deploy to device using llama.cpp or MLC LLM</h4>
+      <p>These are inference engines that run your quantized model on Android, iOS, or desktop without internet. MLC LLM is optimized for mobile GPUs.</p>
+    </div>
+  </div>
+
+  <h2>Step 5 — Personality modeling</h2>
+  <div class="card">
+    <h3>Personality profile structure</h3>
+    <table class="tech-table">
+      <thead><tr><th>Attribute</th><th>How it's captured</th><th>Used for</th></tr></thead>
+      <tbody>
+        <tr><td>Communication style</td><td>Tone classifier on your writing</td><td>Response generation</td></tr>
+        <tr><td>Topic preferences</td><td>TF-IDF on your texts</td><td>Relevance scoring</td></tr>
+        <tr><td>Decision patterns</td><td>Manual annotation / Q&A pairs</td><td>Advice/opinion responses</td></tr>
+        <tr><td>Relationships</td><td>Named entity recognition on your contacts</td><td>Context awareness</td></tr>
+        <tr><td>Knowledge domains</td><td>What you read and write about</td><td>Expertise weighting</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box">
+    <strong>👉 Beginner shortcut:</strong> The five steps above describe the complete fine-tuning pipeline. If you're building your first version, implement RAG first (Start Here tab). RAG delivers 80% of the personality matching with none of the training complexity. Return to Step 4 (LoRA fine-tuning) only after your MVP is working.
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('What is LoRA fine-tuning and how does it work step by step?')">Explain LoRA in depth ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('How do I run a language model on an Android phone using MLC LLM?')">Running LLM on Android ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('What is model quantization in simple terms and what is GGUF format?')">What is quantization? ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ MESH NET ═══════ -->
+<section class="section" id="mesh-net">
+<div class="content">
+  <div class="hero-tag">// MESH NETWORK</div>
+  <h1>Mesh Network — Internet Without Internet</h1>
+  <p class="lead">How devices talk to each other directly, without routers, ISPs, or internet — and how messages hop between devices like water through a chain.</p>
+
+  <h2>Traditional vs Mesh (plain English)</h2>
+  <p>Normally: your phone → WiFi router → ISP → internet. Remove any link and it breaks. A mesh network removes the router and ISP entirely. Each device becomes a mini-router.</p>
+
+  <div class="svg-wrap">
+    <svg width="100%" viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <text x="155" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#fb7185">Traditional (breaks if router fails)</text>
+      <rect x="120" y="85" width="70" height="34" rx="8" fill="rgba(251,113,133,0.1)" stroke="rgba(251,113,133,0.4)" stroke-width="0.8"/>
+      <text x="155" y="107" text-anchor="middle" font-size="11" font-weight="500" fill="#fb7185">Router</text>
+
+      <circle cx="68" cy="55" r="16" fill="rgba(251,113,133,0.1)" stroke="rgba(251,113,133,0.4)" stroke-width="0.8"/>
+      <text x="68" y="60" text-anchor="middle" font-size="10" fill="#e2e8f4">📱A</text>
+      <circle cx="242" cy="55" r="16" fill="rgba(251,113,133,0.1)" stroke="rgba(251,113,133,0.4)" stroke-width="0.8"/>
+      <text x="242" y="60" text-anchor="middle" font-size="10" fill="#e2e8f4">📱B</text>
+      <circle cx="68" cy="175" r="16" fill="rgba(251,113,133,0.1)" stroke="rgba(251,113,133,0.4)" stroke-width="0.8"/>
+      <text x="68" y="180" text-anchor="middle" font-size="10" fill="#e2e8f4">💻C</text>
+      <circle cx="242" cy="175" r="16" fill="rgba(251,113,133,0.1)" stroke="rgba(251,113,133,0.4)" stroke-width="0.8"/>
+      <text x="242" y="180" text-anchor="middle" font-size="10" fill="#e2e8f4">💻D</text>
+
+      <line x1="82" y1="65" x2="122" y2="90" stroke="#fb7185" stroke-width="1" marker-end="url(#arrm)"/>
+      <line x1="228" y1="65" x2="190" y2="90" stroke="#fb7185" stroke-width="1" marker-end="url(#arrm)"/>
+      <line x1="82" y1="163" x2="122" y2="116" stroke="#fb7185" stroke-width="1" marker-end="url(#arrm)"/>
+      <line x1="228" y1="163" x2="190" y2="116" stroke="#fb7185" stroke-width="1" marker-end="url(#arrm)"/>
+
+      <line x1="315" y1="10" x2="315" y2="210" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="4 3"/>
+
+      <text x="500" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#6ee7b7">Mesh (works even if nodes fail)</text>
+
+      <circle cx="415" cy="55" r="16" fill="rgba(110,231,183,0.12)" stroke="rgba(110,231,183,0.4)" stroke-width="0.8"/>
+      <text x="415" y="60" text-anchor="middle" font-size="10" fill="#e2e8f4">📱A</text>
+      <circle cx="585" cy="55" r="16" fill="rgba(110,231,183,0.12)" stroke="rgba(110,231,183,0.4)" stroke-width="0.8"/>
+      <text x="585" y="60" text-anchor="middle" font-size="10" fill="#e2e8f4">📱B</text>
+      <circle cx="415" cy="175" r="16" fill="rgba(110,231,183,0.12)" stroke="rgba(110,231,183,0.4)" stroke-width="0.8"/>
+      <text x="415" y="180" text-anchor="middle" font-size="10" fill="#e2e8f4">💻C</text>
+      <circle cx="585" cy="175" r="16" fill="rgba(110,231,183,0.12)" stroke="rgba(110,231,183,0.4)" stroke-width="0.8"/>
+      <text x="585" y="180" text-anchor="middle" font-size="10" fill="#e2e8f4">💻D</text>
+      <circle cx="500" cy="115" r="18" fill="rgba(110,231,183,0.22)" stroke="rgba(110,231,183,0.6)" stroke-width="1.2"/>
+      <text x="500" y="120" text-anchor="middle" font-size="10" fill="#e2e8f4">📱E</text>
+
+      <line x1="430" y1="65" x2="484" y2="103" stroke="#6ee7b7" stroke-width="0.8" opacity="0.7"/>
+      <line x1="570" y1="65" x2="516" y2="103" stroke="#6ee7b7" stroke-width="0.8" opacity="0.7"/>
+      <line x1="430" y1="163" x2="484" y2="127" stroke="#6ee7b7" stroke-width="0.8" opacity="0.7"/>
+      <line x1="570" y1="163" x2="516" y2="127" stroke="#6ee7b7" stroke-width="0.8" opacity="0.7"/>
+      <line x1="431" y1="58" x2="569" y2="58" stroke="#6ee7b7" stroke-width="0.8" opacity="0.7"/>
+      <line x1="431" y1="174" x2="569" y2="174" stroke="#6ee7b7" stroke-width="0.8" opacity="0.7"/>
+      <line x1="415" y1="71" x2="415" y2="159" stroke="#6ee7b7" stroke-width="0.8" opacity="0.7"/>
+      <line x1="585" y1="71" x2="585" y2="159" stroke="#6ee7b7" stroke-width="0.8" opacity="0.7"/>
+    </svg>
+  </div>
+
+  <h2>The two wireless technologies</h2>
+  <div class="two-col">
+    <div class="card">
+      <div class="badge badge-blue">Primary</div>
+      <h3>WiFi Direct (P2P)</h3>
+      <p>Devices connect directly to each other — like Bluetooth but much faster. Range: ~100-200 meters. Speed: up to 250 Mbps. No router needed. Supported on Android natively.</p>
+      <p><strong style="color:var(--text);font-weight:500">Best for:</strong> transferring files, running AI queries, syncing model updates.</p>
+    </div>
+    <div class="card">
+      <div class="badge badge-teal">Fallback</div>
+      <h3>Bluetooth Low Energy (BLE)</h3>
+      <p>Lower power, shorter range (~10-30m). Slower (1-3 Mbps) but works even when WiFi-Direct isn't available. Better for basic messaging and device discovery.</p>
+      <p><strong style="color:var(--text);font-weight:500">Best for:</strong> device discovery, short text messages, presence announcements.</p>
+    </div>
+  </div>
+
+  <h2>How store-and-forward routing works</h2>
+  <div class="flow-step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Device A sends to Device D (not directly visible)</h4>
+      <p>A can't see D but sees B and C. It sends the message to both (flooding) with a TTL counter of 5 hops.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>B and C receive, decrement TTL, check seen-cache</h4>
+      <p>"Have I seen this message ID before?" If no, forward to all known devices except sender. Prevents infinite loops.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Message reaches D — decrypts, sends ACK</h4>
+      <p>D recognizes it's the destination, decrypts the message, and sends an acknowledgment back through the mesh.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Delay-tolerant networking (DTN) for offline nodes</h4>
+      <p>If D is offline, the nearest device stores the message and delivers it when D reconnects. No server needed — like email, but over mesh.</p>
+    </div>
+  </div>
+
+  <h2>Offline Wikipedia mirror</h2>
+  <p>Kiwix stores Wikipedia in compressed format. A text-only English Wikipedia is ~22GB; a curated educational subset is 2-6GB — fits on a phone's SD card.</p>
+  <div class="success-box">
+    <strong>How it integrates:</strong> Your AI clone queries the local Kiwix database for factual questions. "What is the capital of Tanzania?" → AI searches local Wikipedia → returns answer. Zero internet needed.
+  </div>
+
+  <h2>Mesh app feature matrix</h2>
+  <table class="tech-table">
+    <thead><tr><th>Feature</th><th>How it works</th><th>Complexity</th></tr></thead>
+    <tbody>
+      <tr><td>Text messaging</td><td>Encrypted packets, hop-by-hop routing</td><td><span class="badge badge-amber">Medium</span></td></tr>
+      <tr><td>File sharing</td><td>Split into chunks, send over WiFi-Direct, reassemble</td><td><span class="badge badge-amber">Medium</span></td></tr>
+      <tr><td>AI query forwarding</td><td>Send prompt to a device that has a powerful model</td><td><span class="badge badge-coral">High</span></td></tr>
+      <tr><td>Model sync</td><td>Distribute updated AI model files across mesh</td><td><span class="badge badge-coral">High</span></td></tr>
+      <tr><td>Device discovery</td><td>BLE advertisements + mDNS announcements</td><td><span class="badge badge-teal">Low</span></td></tr>
+      <tr><td>Presence / status</td><td>Broadcast heartbeat packets with device metadata</td><td><span class="badge badge-teal">Low</span></td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('What is delay-tolerant networking and what protocols implement it?')">DTN protocols explained ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('How does WiFi Direct work on Android and how do I implement it in Kotlin?')">WiFi Direct on Android ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ DATA FLOW ═══════ -->
+<section class="section" id="data-flow">
+<div class="content">
+  <div class="hero-tag">// DATA FLOW</div>
+  <h1>Data Flow — How a Query Travels</h1>
+  <p class="lead">From the moment someone queries your AI clone to the moment they receive a response — every step, every encryption layer, every hop in the mesh.</p>
+
+  <h2>End-to-end query flow</h2>
+
+  <div class="flow-step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>User (Priya) types a question on her phone</h4>
+      <p>"What would Arjun think about this architecture decision?" — Priya wants to query Arjun's AI clone. She types into the mesh app UI.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>App looks up Arjun's public key from contact list</h4>
+      <p>Priya's device retrieves Arjun's Ed25519 public key from the encrypted contact store. This is his identity on the mesh.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>X25519 ECDH key exchange creates a shared secret</h4>
+      <p>Both devices derive the same AES session key without transmitting it. Even if someone recorded all packets, they cannot derive the key.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Query encrypted with AES-256-GCM</h4>
+      <p>The prompt is encrypted with the session key. GCM mode also adds an authentication tag — so the recipient knows nothing was tampered with.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Encrypted packet wrapped in mesh header and routed</h4>
+      <p>A mesh packet is created: destination device ID, TTL=5, unique message ID, payload=encrypted query. Sent to all nearby devices.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h4>Packet hops through mesh until it reaches Arjun's device</h4>
+      <p>Intermediate devices forward the packet without being able to read it (they don't have the decryption key). TTL decrements at each hop.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <h4>Arjun's device decrypts and feeds query to AI model</h4>
+      <p>The encrypted payload is decrypted using Arjun's private key derivation. The plaintext prompt is passed to llama.cpp running locally.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">8</div>
+    <div class="step-body">
+      <h4>AI model + RAG knowledge base generates response</h4>
+      <p>The fine-tuned model first searches the local knowledge base (RAG), retrieves relevant context, then generates a response in Arjun's voice.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">9</div>
+    <div class="step-body">
+      <h4>Response signed with Arjun's private key</h4>
+      <p>The response is signed using Ed25519 — Priya's device can verify this response came from Arjun's device and wasn't forged by a relay node.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">10</div>
+    <div class="step-body">
+      <h4>Encrypted, signed response routed back to Priya</h4>
+      <p>Same mesh routing in reverse. Priya's device decrypts, verifies the signature, and displays the response in the chat UI.</p>
+    </div>
+  </div>
+
+  <h2>Data flow diagram</h2>
+  <div class="svg-wrap">
+    <svg width="100%" viewBox="0 0 680 310" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrq" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#4f9cf9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Priya -->
+      <rect x="20" y="20" width="120" height="80" rx="10" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.4)" stroke-width="0.8"/>
+      <text x="80" y="50" text-anchor="middle" font-size="22">📱</text>
+      <text x="80" y="73" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Priya</text>
+      <text x="80" y="89" text-anchor="middle" font-size="10" fill="#8a9ab8">queries AI clone</text>
+
+      <line x1="140" y1="60" x2="190" y2="60" stroke="#4f9cf9" stroke-width="1" marker-end="url(#arrq)"/>
+      <text x="165" y="52" text-anchor="middle" font-size="9" fill="#8a9ab8">encrypt</text>
+
+      <!-- Mesh -->
+      <rect x="190" y="20" width="120" height="80" rx="10" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.3)" stroke-width="0.8"/>
+      <text x="250" y="52" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Mesh Relay</text>
+      <text x="250" y="70" text-anchor="middle" font-size="10" fill="#8a9ab8">Device B → C</text>
+      <text x="250" y="86" text-anchor="middle" font-size="10" fill="#f59e0b">TTL 5→4→3</text>
+
+      <line x1="310" y1="60" x2="360" y2="60" stroke="#4f9cf9" stroke-width="1" marker-end="url(#arrq)"/>
+      <text x="335" y="52" text-anchor="middle" font-size="9" fill="#8a9ab8">hop</text>
+
+      <!-- Arjun's device -->
+      <rect x="360" y="20" width="130" height="80" rx="10" fill="rgba(79,156,249,0.1)" stroke="rgba(79,156,249,0.4)" stroke-width="0.8"/>
+      <text x="425" y="50" text-anchor="middle" font-size="22">📱</text>
+      <text x="425" y="73" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Arjun's Device</text>
+      <text x="425" y="89" text-anchor="middle" font-size="10" fill="#4f9cf9">decrypt + run AI</text>
+
+      <line x1="490" y1="60" x2="540" y2="60" stroke="#4f9cf9" stroke-width="1" marker-end="url(#arrq)"/>
+
+      <!-- AI Model -->
+      <rect x="540" y="20" width="120" height="80" rx="10" fill="rgba(110,231,183,0.1)" stroke="rgba(110,231,183,0.4)" stroke-width="0.8"/>
+      <text x="600" y="48" text-anchor="middle" font-size="22">🧠</text>
+      <text x="600" y="72" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">AI Model</text>
+      <text x="600" y="88" text-anchor="middle" font-size="10" fill="#6ee7b7">llama.cpp / RAG</text>
+
+      <!-- Down arrows -->
+      <line x1="600" y1="100" x2="600" y2="148" stroke="#6ee7b7" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrq)"/>
+
+      <!-- Response path -->
+      <rect x="540" y="150" width="120" height="70" rx="10" fill="rgba(110,231,183,0.08)" stroke="rgba(110,231,183,0.3)" stroke-width="0.8"/>
+      <text x="600" y="178" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Response</text>
+      <text x="600" y="196" text-anchor="middle" font-size="10" fill="#6ee7b7">signed + encrypted</text>
+      <text x="600" y="210" text-anchor="middle" font-size="10" fill="#8a9ab8">Ed25519 + AES-256</text>
+
+      <line x1="540" y1="185" x2="500" y2="185" stroke="#6ee7b7" stroke-width="1" marker-end="url(#arrq)"/>
+
+      <rect x="360" y="150" width="130" height="70" rx="10" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.3)" stroke-width="0.8"/>
+      <text x="425" y="180" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Mesh Return</text>
+      <text x="425" y="198" text-anchor="middle" font-size="10" fill="#f59e0b">routed back</text>
+      <text x="425" y="213" text-anchor="middle" font-size="10" fill="#8a9ab8">encrypted payload</text>
+
+      <line x1="360" y1="185" x2="310" y2="185" stroke="#6ee7b7" stroke-width="1" marker-end="url(#arrq)"/>
+
+      <rect x="20" y="255" width="120" height="40" rx="10" fill="rgba(110,231,183,0.1)" stroke="rgba(110,231,183,0.4)" stroke-width="0.8"/>
+      <text x="80" y="280" text-anchor="middle" font-size="12" font-weight="500" fill="#e2e8f4">Priya sees reply</text>
+
+      <text x="215" y="202" text-anchor="middle" font-size="9" fill="#8a9ab8">← response encrypted, mesh-routed back</text>
+    </svg>
+  </div>
+
+  <h2>Packet structure</h2>
+  <div class="card">
+    <div class="code-block">
+{
+  <span class="code-key">"version"</span>: <span class="code-val">1</span>,
+  <span class="code-key">"msg_id"</span>: <span class="code-val">"a1b2c3d4"</span>,              <span class="code-comment">// unique ID for deduplication</span>
+  <span class="code-key">"src_pub_key"</span>: <span class="code-val">"ed25519:abc..."</span>,      <span class="code-comment">// sender identity</span>
+  <span class="code-key">"dst_pub_key"</span>: <span class="code-val">"ed25519:xyz..."</span>,      <span class="code-comment">// destination identity</span>
+  <span class="code-key">"ttl"</span>: <span class="code-val">5</span>,                           <span class="code-comment">// max 5 hops</span>
+  <span class="code-key">"timestamp"</span>: <span class="code-val">1700000000</span>,           <span class="code-comment">// unix timestamp</span>
+  <span class="code-key">"payload"</span>: <span class="code-val">"&lt;AES-256-GCM encrypted blob&gt;"</span>,
+  <span class="code-key">"signature"</span>: <span class="code-val">"&lt;Ed25519 signature&gt;"</span>    <span class="code-comment">// proves origin</span>
+}
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('How does Diffie-Hellman key exchange work in simple terms?')">How does key exchange work? ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('What is AES-256-GCM encryption and why use GCM mode?')">What is AES-256-GCM? ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ TECH STACK ═══════ -->
+<section class="section" id="tech-stack">
+<div class="content">
+  <div class="hero-tag">// TECH STACK</div>
+  <h1>Tech Stack</h1>
+  <p class="lead">Every library, language, tool, and framework you need — with why each one is chosen and where it fits in the system.</p>
+
+  <h2>AI / Machine Learning</h2>
+  <table class="tech-table">
+    <thead><tr><th>Tool / Library</th><th>Language</th><th>Purpose</th><th>Why chosen</th></tr></thead>
+    <tbody>
+      <tr><td><strong style="color:var(--text)">Hugging Face Transformers</strong></td><td>Python</td><td>Load and fine-tune base models</td><td>Industry standard, huge ecosystem</td></tr>
+      <tr><td><strong style="color:var(--text)">PEFT (LoRA)</strong></td><td>Python</td><td>Efficient fine-tuning</td><td>Fine-tune on consumer GPU, saves memory</td></tr>
+      <tr><td><strong style="color:var(--text)">llama.cpp</strong></td><td>C++ / Python</td><td>Run model on-device</td><td>Fastest inference, runs on CPU/mobile</td></tr>
+      <tr><td><strong style="color:var(--text)">MLC LLM</strong></td><td>Python / Kotlin / Swift</td><td>Android/iOS inference</td><td>Official mobile LLM runtime</td></tr>
+      <tr><td><strong style="color:var(--text)">Whisper (OpenAI)</strong></td><td>Python</td><td>Transcribe your voice to text</td><td>Best open-source speech recognition</td></tr>
+      <tr><td><strong style="color:var(--text)">LlamaIndex</strong></td><td>Python</td><td>Knowledge base retrieval (RAG)</td><td>Connects LLM to local documents</td></tr>
+      <tr><td><strong style="color:var(--text)">ChromaDB</strong></td><td>Python</td><td>Vector database for RAG</td><td>Runs fully local, simple API</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Mobile App (Android — primary)</h2>
+  <table class="tech-table">
+    <thead><tr><th>Tool / Library</th><th>Purpose</th><th>Layer</th></tr></thead>
+    <tbody>
+      <tr><td><strong style="color:var(--text)">Kotlin + Jetpack Compose</strong></td><td>Main app UI and logic</td><td>App layer</td></tr>
+      <tr><td><strong style="color:var(--text)">WiFi Direct API (Android)</strong></td><td>P2P device connections</td><td>Network layer</td></tr>
+      <tr><td><strong style="color:var(--text)">Bluetooth LE API</strong></td><td>Device discovery, fallback messaging</td><td>Network layer</td></tr>
+      <tr><td><strong style="color:var(--text)">SQLCipher</strong></td><td>Encrypted local database (personality store)</td><td>Data layer</td></tr>
+      <tr><td><strong style="color:var(--text)">JNI (Java Native Interface)</strong></td><td>Bridge to llama.cpp C++ code</td><td>AI bridge</td></tr>
+      <tr><td><strong style="color:var(--text)">Kiwix Android lib</strong></td><td>Offline Wikipedia browser</td><td>Knowledge base</td></tr>
+      <tr><td><strong style="color:var(--text)">Libsodium / Tink</strong></td><td>Cryptography (encryption, signing)</td><td>Security layer</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Desktop / Training Environment</h2>
+  <table class="tech-table">
+    <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong style="color:var(--text)">Python 3.11+</strong></td><td>All training scripts, data cleaning, model conversion</td></tr>
+      <tr><td><strong style="color:var(--text)">PyTorch 2.x</strong></td><td>Deep learning framework for fine-tuning</td></tr>
+      <tr><td><strong style="color:var(--text)">CUDA (NVIDIA GPU)</strong></td><td>GPU acceleration for training (RTX 3060 or better)</td></tr>
+      <tr><td><strong style="color:var(--text)">FastAPI</strong></td><td>Local REST API server for desktop inference</td></tr>
+      <tr><td><strong style="color:var(--text)">Electron (optional)</strong></td><td>Cross-platform desktop app wrapper</td></tr>
+      <tr><td><strong style="color:var(--text)">Docker</strong></td><td>Reproducible training environment</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Networking protocol stack</h2>
+  <div class="svg-wrap">
+    <svg width="100%" viewBox="0 0 680 310" xmlns="http://www.w3.org/2000/svg">
+      <rect x="50" y="20" width="580" height="52" rx="8" fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+      <text x="340" y="43" text-anchor="middle" font-size="13" font-weight="500" fill="#a78bfa">Application layer</text>
+      <text x="340" y="62" text-anchor="middle" font-size="11" fill="#8a9ab8">Chat UI · AI query · File share · Wikipedia browse</text>
+
+      <rect x="50" y="86" width="580" height="52" rx="8" fill="rgba(110,231,183,0.07)" stroke="rgba(110,231,183,0.3)" stroke-width="1"/>
+      <text x="340" y="109" text-anchor="middle" font-size="13" font-weight="500" fill="#6ee7b7">Identity protocol layer</text>
+      <text x="340" y="128" text-anchor="middle" font-size="11" fill="#8a9ab8">Authentication · E2E encryption · Identity signing (Ed25519)</text>
+
+      <rect x="50" y="152" width="580" height="52" rx="8" fill="rgba(245,158,11,0.07)" stroke="rgba(245,158,11,0.3)" stroke-width="1"/>
+      <text x="340" y="175" text-anchor="middle" font-size="13" font-weight="500" fill="#f59e0b">Mesh routing layer</text>
+      <text x="340" y="194" text-anchor="middle" font-size="11" fill="#8a9ab8">Packet headers · Hop count · Store-and-forward · DTN protocol</text>
+
+      <rect x="50" y="218" width="580" height="52" rx="8" fill="rgba(79,156,249,0.07)" stroke="rgba(79,156,249,0.3)" stroke-width="1"/>
+      <text x="340" y="241" text-anchor="middle" font-size="13" font-weight="500" fill="#4f9cf9">Transport layer</text>
+      <text x="340" y="260" text-anchor="middle" font-size="11" fill="#8a9ab8">Custom reliable UDP over WiFi-Direct · BLE GATT for small payloads</text>
+
+      <rect x="50" y="284" width="580" height="18" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/>
+      <text x="340" y="297" text-anchor="middle" font-size="11" fill="#4a5a78">Physical radio — WiFi 802.11 Direct · Bluetooth 5.0 LE</text>
+    </svg>
+  </div>
+
+  <div class="info-box">
+    <strong>👉 MVP tech stack (start with just these 4):</strong> From all the tools listed above, you only need four for your first working demo: <code>Ollama</code> (runs the AI model locally), <code>FastAPI</code> (exposes it as an API), <code>ChromaDB + sentence-transformers</code> (your RAG knowledge base), and Python's built-in <code>socket</code> module (networking). Everything else is added in later phases.
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('What is RAG — retrieval-augmented generation and how do I implement it?')">What is RAG? ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('What is Ed25519 digital signature and how is it used in messaging apps?')">What is Ed25519? ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('How does llama.cpp work and how do I use it to run models locally?')">How does llama.cpp work? ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ SECURITY ═══════ -->
+<section class="section" id="security">
+<div class="content">
+  <div class="hero-tag">// SECURITY ARCHITECTURE</div>
+  <h1>Security Architecture</h1>
+  <p class="lead">Your AI clone contains your most personal data and thoughts. Security isn't optional — it's the foundation of every design decision.</p>
+
+  <h2>Threat model — what are we protecting against?</h2>
+  <div class="card">
+    <table class="tech-table">
+      <thead><tr><th>Threat</th><th>Risk</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Eavesdropping on mesh</td><td>Someone intercepts your AI conversations</td><td>E2E encryption (AES-256 + Diffie-Hellman)</td></tr>
+        <tr><td>Impersonation</td><td>Fake "your AI clone" answers as you</td><td>Identity signing with Ed25519 private key</td></tr>
+        <tr><td>Unauthorized queries</td><td>Strangers query your AI without permission</td><td>Contact-based allowlist + token auth</td></tr>
+        <tr><td>Device theft</td><td>Physical access to your phone + all data</td><td>SQLCipher + secure enclave + passphrase</td></tr>
+        <tr><td>Relay node snooping</td><td>Middle-hop device reads your messages</td><td>Onion-style: encrypted to destination only</td></tr>
+        <tr><td>Model poisoning</td><td>Malicious update corrupts your AI clone</td><td>Signed model updates + hash verification</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>How end-to-end encryption works here</h2>
+  <div class="flow-step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Each device generates an Ed25519 key pair on first launch</h4>
+      <p>Private key stays on the device (never shared, stored in Android Keystore / Secure Enclave hardware). Public key is your "identity" on the mesh — shared with trusted contacts.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Key exchange using X25519 ECDH</h4>
+      <p>When two devices want to communicate, they derive the same shared secret using elliptic curve Diffie-Hellman — without ever transmitting the secret. Even if someone records all packets, they cannot derive it.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>All messages encrypted with AES-256-GCM</h4>
+      <p>GCM (Galois/Counter Mode) provides both encryption AND authentication — you know the message wasn't tampered with in transit. 256-bit key = computationally infeasible to brute force.</p>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>AI responses signed with your private key</h4>
+      <p>The recipient can verify the response actually came from your device and wasn't forged by a relay. Like a digital wax seal on every message.</p>
+    </div>
+  </div>
+
+  <h2>Data stored on device</h2>
+  <table class="tech-table">
+    <thead><tr><th>Data type</th><th>Storage</th><th>Encryption</th></tr></thead>
+    <tbody>
+      <tr><td>AI model weights</td><td>Internal storage</td><td>Filesystem-level (Android FDE)</td></tr>
+      <tr><td>Personality profile</td><td>SQLCipher DB</td><td>AES-256 with user passphrase key</td></tr>
+      <tr><td>Message history</td><td>SQLCipher DB</td><td>AES-256, purged after X days</td></tr>
+      <tr><td>Private key</td><td>Android Keystore / Secure Enclave</td><td>Hardware-backed, never exported</td></tr>
+      <tr><td>Contact allowlist</td><td>SQLCipher DB</td><td>AES-256</td></tr>
+      <tr><td>Wikipedia mirror</td><td>SD card / external</td><td>Unencrypted (public data)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn-box">
+    <strong>Critical consideration:</strong> Fine-tuning on personal data creates a model that IS your private data. Anyone who gets access to your model weights could potentially extract information about your writing patterns and opinions through adversarial prompting. Guard your .gguf model file as carefully as your private key.
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('Explain elliptic curve Diffie-Hellman key exchange simply with an analogy')">How does ECDH work? ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('What is the Android Keystore system and how does hardware-backed key storage work?')">Android Keystore explained ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ ROADMAP ═══════ -->
+<section class="section" id="roadmap">
+<div class="content">
+  <div class="hero-tag">// DEVELOPMENT ROADMAP</div>
+  <h1>Development Roadmap</h1>
+  <p class="lead">A realistic phased plan — starting with something you can demo in a week, scaling to the full vision over months.</p>
+
+  <h2>Phase overview</h2>
+  <div class="card-grid">
+    <div class="metric"><div class="metric-label">Phase 1 — MVP</div><div class="metric-value">4 wks</div></div>
+    <div class="metric"><div class="metric-label">Phase 2 — Mesh</div><div class="metric-value">8 wks</div></div>
+    <div class="metric"><div class="metric-label">Phase 3 — Full</div><div class="metric-value">12 wks</div></div>
+    <div class="metric"><div class="metric-label">Total estimate</div><div class="metric-value">~6 mo</div></div>
+  </div>
+
+  <h2>Detailed timeline</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Week 1-2</div>
+      <div class="tl-title">Data collection & cleaning pipeline</div>
+      <div class="tl-desc">Write scripts to export and clean your WhatsApp, email, and notes data. Convert to prompt-completion JSONL format. Build a data quality checker. Goal: 5,000+ clean training examples.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Week 3-4</div>
+      <div class="tl-title">Fine-tune baseline model (desktop)</div>
+      <div class="tl-desc">Fine-tune Llama 3.2 3B or Phi-3 Mini using LoRA. Evaluate responses qualitatively. Quantize to GGUF. Run locally on desktop with llama.cpp. First demo-able milestone.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Week 5-6</div>
+      <div class="tl-title">Android app skeleton + local AI</div>
+      <div class="tl-desc">Build basic Kotlin + Compose app. Integrate MLC LLM or llamafile for on-device inference. Simple chat UI. No network yet — just you talking to your local AI clone.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Week 7-8</div>
+      <div class="tl-title">WiFi Direct peer-to-peer connection</div>
+      <div class="tl-desc">Implement WiFi Direct discovery and connection between two Android devices. Send plain text messages. No encryption yet — just proving the P2P channel works.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Week 9-10</div>
+      <div class="tl-title">Encryption + identity layer</div>
+      <div class="tl-desc">Add Ed25519 key generation. Implement X25519 key exchange. Encrypt all messages with AES-256-GCM using libsodium. Add contact allowlist. Store everything in SQLCipher.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Week 11-14</div>
+      <div class="tl-title">Multi-hop mesh routing</div>
+      <div class="tl-desc">Implement store-and-forward routing protocol. TTL-based packet expiry. Message deduplication (seen-message cache). BLE fallback for discovery. Test with 3+ devices.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Week 15-18</div>
+      <div class="tl-title">Knowledge base + offline Wikipedia</div>
+      <div class="tl-desc">Integrate Kiwix library for offline Wikipedia. Build RAG pipeline connecting LlamaIndex to local document store. AI can now answer factual questions using local knowledge.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-phase">Week 19-24</div>
+      <div class="tl-title">Polish, testing, and CV presentation</div>
+      <div class="tl-desc">Performance profiling. UI polish. Write technical documentation. Create a demo video. Deploy to a small group of test users. Prepare project write-up for CV and GitHub.</div>
+    </div>
+  </div>
+
+  <h2>Team roles needed</h2>
+  <div class="card-grid">
+    <div class="card" style="margin:0">
+      <div class="badge badge-blue">You (solo or lead)</div>
+      <h3>ML Engineer</h3>
+      <p>Data pipeline, fine-tuning, model optimization, knowledge base / RAG</p>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="badge badge-teal">Collaborator 1</div>
+      <h3>Android Dev</h3>
+      <p>Kotlin app, UI, WiFi Direct integration, BLE, on-device inference bridge</p>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="badge badge-amber">Collaborator 2</div>
+      <h3>Networking Engineer</h3>
+      <p>Mesh routing protocol, DTN, packet design, multi-hop testing</p>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="badge badge-purple">Collaborator 3</div>
+      <h3>Security Engineer</h3>
+      <p>Cryptography implementation, threat modeling, key management, auditing</p>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:1.5rem">
+    <strong>👉 Beginner fast-track:</strong> Swap Weeks 1–4 for the approach in the Start Here tab: (1) working AI chat with FastAPI + Ollama, (2) RAG with ChromaDB instead of fine-tuning, (3) socket networking. You reach the same "two phones, no internet, AI answers as you" milestone, but using tools you can set up today with no GPU. Weeks 5–24 remain unchanged.
+  </div>
+
+  <h2>Minimum viable demo (CV-worthy)</h2>
+  <div class="success-box">
+    <strong>The MVP you need:</strong> Two phones with no internet connection. Phone A has your fine-tuned AI. Phone B queries it over WiFi-Direct. The AI responds in your voice. That alone — even without multi-hop or encryption — is impressive and CV-worthy. Build this in 4-6 weeks.
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <button class="ask-btn" onclick="sendPrompt('What are good free resources to learn Android Kotlin development for beginners?')">Learn Android dev ↗</button>
+    <button class="ask-btn" onclick="sendPrompt('How do I set up a Python environment for fine-tuning LLMs with LoRA?')">Setup for fine-tuning ↗</button>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ GLOSSARY ═══════ -->
+<section class="section" id="glossary">
+<div class="content">
+  <div class="hero-tag">// GLOSSARY</div>
+  <h1>Glossary</h1>
+  <p class="lead">Every technical term used in this prototype — explained in plain language so you can read any part of this document without getting stuck.</p>
+  <div id="glossary-list"></div>
+</div>
+</section>
+
+<!-- ─── AI CHAT PANEL ─── -->
+<div id="ai-panel">
+  <div class="ai-panel-header">
+    <div class="ai-dot"></div>
+    <span class="ai-title">AI ASSISTANT // OFFLINE-AI-SYSTEM</span>
+    <button class="ai-close" onclick="closeAI()">×</button>
+  </div>
+  <div class="ai-messages" id="ai-messages"></div>
+  <div class="ai-input-row">
+    <input class="ai-input" id="ai-input" placeholder="Ask anything about this project..." onkeydown="if(event.key==='Enter')sendManual()">
+    <button class="ai-send" id="ai-send-btn" onclick="sendManual()">↑</button>
+  </div>
+</div>
+
+<button id="ai-toggle" onclick="toggleAI()">🤖</button>
+
+<script>
+const TABS = ['start-here','overview','architecture','ai-clone','mesh-net','data-flow','tech-stack','security','roadmap','glossary'];
+
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const idx = TABS.indexOf(id);
+  if (idx !== -1) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ─── AI CHAT ───
+let aiOpen = false;
+
+function toggleAI() {
+  aiOpen ? closeAI() : openAI();
+}
+
+function openAI() {
+  aiOpen = true;
+  document.getElementById('ai-panel').classList.add('open');
+  document.getElementById('ai-toggle').classList.add('hidden');
+}
+
+function closeAI() {
+  aiOpen = false;
+  document.getElementById('ai-panel').classList.remove('open');
+  document.getElementById('ai-toggle').classList.remove('hidden');
+}
+
+function sendManual() {
+  const input = document.getElementById('ai-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  sendPrompt(text);
+}
+
+async function sendPrompt(prompt) {
+  openAI();
+  const msgs = document.getElementById('ai-messages');
+
+  // User bubble
+  const userBubble = document.createElement('div');
+  userBubble.className = 'ai-msg user';
+  userBubble.textContent = prompt;
+  msgs.appendChild(userBubble);
+
+  // Loading bubble
+  const loadBubble = document.createElement('div');
+  loadBubble.className = 'ai-msg assistant loading';
+  loadBubble.textContent = '⟳ Thinking...';
+  msgs.appendChild(loadBubble);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const btn = document.getElementById('ai-send-btn');
+  btn.disabled = true;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are an expert technical assistant helping a developer build an Offline AI Identity System — an on-device AI clone that represents a user on a peer-to-peer mesh network with no internet. You explain concepts clearly, give practical code examples when helpful, and keep answers concise and actionable. The tech stack is: Python, FastAPI, Ollama/llama.cpp, ChromaDB, LoRA fine-tuning, Android Kotlin, WiFi Direct, Bluetooth LE, AES-256-GCM encryption, Ed25519 signing, SQLCipher. Always be helpful, specific, and technically accurate.',
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text || 'Sorry, I could not get a response.';
+
+    loadBubble.className = 'ai-msg assistant';
+    loadBubble.textContent = text;
+
+  } catch (err) {
+    loadBubble.className = 'ai-msg assistant';
+    loadBubble.textContent = '⚠ Could not reach AI. Check connection. Error: ' + err.message;
+  }
+
+  btn.disabled = false;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ─── GLOSSARY ───
+const glossaryTerms = [
+  { term: "LLM (Large Language Model)", def: "An AI system trained on huge amounts of text to understand and generate human language. Examples: GPT-4, Llama 3, Mistral. Your AI clone is a fine-tuned LLM." },
+  { term: "Fine-tuning", def: "Taking a pre-trained AI model and training it further on your specific data, so it learns your style, tone, and knowledge. Like hiring an expert and giving them on-the-job training." },
+  { term: "LoRA (Low-Rank Adaptation)", def: "A technique to fine-tune large models efficiently by only adjusting a tiny fraction of their parameters (weights). Makes fine-tuning possible on consumer hardware without a data center." },
+  { term: "Quantization", def: "Compressing an AI model by reducing the precision of its numbers (e.g., from 32-bit floats to 4-bit integers). Shrinks a 14GB model to ~4GB with minimal quality loss. Essential for running on phones." },
+  { term: "GGUF", def: "A file format for quantized language models, used by llama.cpp. A '.gguf' file is your AI model in a compressed, device-friendly form." },
+  { term: "llama.cpp", def: "An open-source C++ library that can run language models on CPU (and GPU). It's what lets you run your AI clone on a phone or laptop without specialized hardware." },
+  { term: "RAG (Retrieval-Augmented Generation)", def: "A technique where the AI searches a local database (like your documents or Wikipedia) before answering, so it can reference real facts rather than only its training data." },
+  { term: "Inference", def: "Running an AI model to get an output — giving it a prompt and getting a response. Training is done once; inference happens every time someone asks a question." },
+  { term: "Mesh network", def: "A network topology where every device can connect to every other device directly, and relay messages for others. No central router needed. Like a web of walkie-talkies." },
+  { term: "WiFi Direct", def: "A WiFi standard that lets two devices connect directly to each other without a router — like Bluetooth but with WiFi speeds and range (~100-200m, ~250 Mbps)." },
+  { term: "Bluetooth LE (BLE)", def: "Bluetooth Low Energy — a version of Bluetooth designed for low-power, short-range (~10-30m) communication. Used for device discovery and small message transfer." },
+  { term: "P2P (Peer-to-Peer)", def: "Communication directly between two devices, with no server in the middle. Contrast with client-server, where all communication goes through a central server." },
+  { term: "Store-and-forward", def: "A routing strategy where devices store a message temporarily if the destination isn't reachable, then forward it when a path opens up. Like holding a note until you see someone." },
+  { term: "DTN (Delay-Tolerant Networking)", def: "A networking approach designed for disconnected or intermittently connected networks, where messages may be stored for hours before delivery. Used in disaster scenarios and deep space." },
+  { term: "TTL (Time To Live)", def: "A counter attached to each mesh packet. Every relay device decrements it by 1. When TTL reaches 0, the packet is dropped. Prevents messages from circulating forever." },
+  { term: "End-to-End Encryption (E2E)", def: "Encryption where only the sender and intended recipient can read the message — not intermediate relay nodes. WhatsApp and Signal use this." },
+  { term: "AES-256-GCM", def: "A symmetric encryption algorithm with a 256-bit key (extremely strong). GCM mode also verifies data integrity — nothing was tampered with in transit." },
+  { term: "Diffie-Hellman Key Exchange", def: "A mathematical protocol where two parties can derive the same shared secret over an insecure channel without ever transmitting the secret itself. Foundation of modern E2E encryption." },
+  { term: "Ed25519", def: "A fast, secure digital signature algorithm used to prove identity. Your device generates a public/private key pair; you share the public key, keep the private key secret." },
+  { term: "SQLCipher", def: "An encrypted version of SQLite (a lightweight local database). Stores all your sensitive data (personality profile, messages) in AES-256 encrypted form." },
+  { term: "Android Keystore", def: "A secure system on Android that stores cryptographic keys in hardware (a Secure Enclave chip). The private key never leaves the hardware, even if the app is compromised." },
+  { term: "mDNS", def: "Multicast DNS — a protocol that lets devices on the same local network discover each other by name without a DNS server. Used to announce your device's presence on the mesh." },
+  { term: "Kiwix", def: "An open-source offline content browser that can store compressed versions of Wikipedia, Khan Academy, and other websites so they work without internet." },
+  { term: "Digital Twin", def: "A digital replica of a real-world object or person. In this project, your AI clone is a digital twin — it mimics your personality, reasoning, and communication style." },
+  { term: "ECDH (Elliptic Curve Diffie-Hellman)", def: "A variant of Diffie-Hellman key exchange using elliptic curve math. Provides the same security with much smaller keys — important for mobile devices." },
+  { term: "JNI (Java Native Interface)", def: "A way for Android Java/Kotlin code to call C/C++ code. Used to bridge the Android app with llama.cpp (written in C++) for AI inference." },
+  { term: "FastAPI", def: "A Python web framework for building REST APIs quickly. In this project, used to expose the AI model as a local HTTP server on desktop for development and testing." },
+  { term: "Token (in LLM context)", def: "The basic unit a language model processes. Tokens are roughly word-pieces — 'hello' is one token, 'understanding' might be two. A model's context window is measured in tokens." },
+  { term: "Weights (model weights)", def: "The numerical parameters inside a neural network that encode all its learned knowledge. Fine-tuning adjusts these weights. The model 'weights file' is what you deploy to a device." },
+  { term: "GATT (Generic Attribute Profile)", def: "The protocol Bluetooth LE uses for structured data exchange. In BLE, devices expose 'services' and 'characteristics' over GATT. Used for sending small messages over BLE mesh." },
+];
+
+const container = document.getElementById('glossary-list');
+glossaryTerms.forEach(({term, def}) => {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.style.marginBottom = '10px';
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent);background:var(--blue-bg);border:1px solid var(--blue-border);padding:1px 7px;border-radius:20px">TERM</span>
+      <h3 style="margin:0;font-size:14px">${term}</h3>
+    </div>
+    <p style="margin:0;font-size:13px">${def}</p>
+  `;
+  container.appendChild(div);
+});
+</script>
+</body>
+</html>
